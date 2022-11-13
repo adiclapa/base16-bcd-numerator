@@ -27,13 +27,13 @@ Project File Date:  11/10/2022
 <h2>Output:</h2>
 *** Using Compiler 'V6.18', folder: 'D:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-assembling startup_MKL25Z4.s...
 main.c(2): warning: In file included from...
 ./gpio.h(8): warning: // comments are not allowed in this language [-Wcomment]
 #define Segment_d (3) // port B - pinii 0-3
                       ^
 1 warning generated.
 compiling main.c...
+assembling startup_MKL25Z4.s...
 compiling system_MKL25Z4.c...
 gpio.c(1): warning: In file included from...
 ./gpio.h(8): warning: // comments are not allowed in this language [-Wcomment]
@@ -43,16 +43,22 @@ gpio.c(2): warning: // comments are not allowed in this language [-Wcomment]
 #define SWITCH_PIN (12) // PORT A
                         ^
 gpio.c(5): warning: no previous extern declaration for non-static variable 'count' [-Wmissing-variable-declarations]
-uint8_t count = 0;
-        ^
+int8_t count = 0;
+       ^
 gpio.c(5): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-uint8_t count = 0;
+int8_t count = 0;
 ^
-3 warnings generated.
+gpio.c(6): warning: no previous extern declaration for non-static variable 'reverse' [-Wmissing-variable-declarations]
+uint8_t reverse = 0;
+        ^
+gpio.c(6): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+uint8_t reverse = 0;
+^
+4 warnings generated.
 compiling gpio.c...
 linking...
-Program Size: Code=1444 RO-data=212 RW-data=0 ZI-data=360  
-".\Objects\proiect_micro.axf" - 0 Error(s), 4 Warning(s).
+Program Size: Code=1524 RO-data=208 RW-data=0 ZI-data=360  
+".\Objects\proiect_micro.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -79,9 +85,9 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.6.0
 
    * Component: Keil::Device:Startup:2.5.0
-      Source file:   Device/Source/system_MKL25Z4.c
       Include file:  Device/Source/system_MKL25Z4.h
       Source file:   Device/Source/ARM/startup_MKL25Z4.s
+      Source file:   Device/Source/system_MKL25Z4.c
 Build Time Elapsed:  00:00:00
 </pre>
 </body>

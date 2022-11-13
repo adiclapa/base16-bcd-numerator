@@ -2,7 +2,8 @@
 #define SWITCH_PIN (12) // PORT A
 
 
-uint8_t count = 0;
+int8_t count = 0;
+uint8_t reverse = 0;
 
 void delay(unsigned int length_ms)
 {
@@ -53,9 +54,11 @@ void SevenSegment(void)
 
          case 5:
         	 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_c) | MASK(Segment_d)) | MASK(Segment_b);
+					 PTC->PDOR = MASK(Segment_e);
          break;
 
          case 6:
+					 PTB->PDOR = MASK(Segment_b) | ~(MASK(Segment_a) | MASK(Segment_c) | MASK(Segment_d));
         	 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
          break;
 
@@ -182,7 +185,10 @@ void Switch_Init(void) {
 	// Activare întreruperi pe rising edge
 	PORTA->PCR[SWITCH_PIN] |= PORT_PCR_IRQC(0x09) | PORT_PCR_PE_MASK;
 	
-	count = 0;
+	if(reverse)
+		count = 15;
+	else 
+		count = 0;
 	// Activare întrerupere pentru a folosi switch-ul
 	NVIC_ClearPendingIRQ(PORTA_IRQn);
 	NVIC_SetPriority(PORTA_IRQn, 128);
@@ -192,9 +198,15 @@ void Switch_Init(void) {
 void PORTA_IRQHandler() {
 	SevenSegment();
 	delay(100);
-	count++;
-	if(count == 16)
+	if(reverse){
+		count--;
+		if(count < 0)
+			count = 15;
+	} else {
+		count++;
+		if(count == 16)
 			count = 0;
+	}	
 	
 	PORTA_ISFR = (1<<SWITCH_PIN);
 }
