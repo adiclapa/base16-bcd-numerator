@@ -5,9 +5,9 @@
 ######################################################
 
 ###### Echipa CCS:
-- *** Clapa Adrian ***
-- *** Coratu Luca ***
-- *** ~~Stoica Alexandru ~~ ***
+- Clapa Adrian 
+- Coratu Luca
+- Stoica Alexandru
 
 ###### Materiale:
 - Push Button Digital
