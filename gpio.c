@@ -1,4 +1,5 @@
 #include "gpio.h"
+#include "Uart.h"
 #define SWITCH_PIN (12) // PORT A
 
 
@@ -198,6 +199,8 @@ void Switch_Init(void) {
 void PORTA_IRQHandler() {
 	SevenSegment();
 	delay(100);
+	//Trimite count la host
+	UART0_Transmit(count);
 	if(reverse){
 		count--;
 		if(count < 0)
@@ -207,6 +210,22 @@ void PORTA_IRQHandler() {
 		if(count == 16)
 			count = 0;
 	}	
-	
+
 	PORTA_ISFR = (1<<SWITCH_PIN);
+}
+
+void UART0_IRQHandler(void) {
+		//Primeste date pe serial
+		uint8_t c = 0;
+		if(UART0->S1 & UART0_S1_RDRF_MASK) {
+			c = UART0->D;
+		}
+		//Daca c este a seteaza reverse pe 0
+		if(c == 'a'){
+			reverse = 0;
+		}
+		//Daca c este d seteaza reverse pe 1
+		if(c == 'd'){
+			reverse = 1;
+		}
 }

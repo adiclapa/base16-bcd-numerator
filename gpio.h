@@ -16,3 +16,4 @@ void PORTA_IRQHandler(void);
 void SevenSegment(void);
 void delay(unsigned int length_ms);
 void RGBLed_Init(void);
+void UART0_IRQHandler(void);
