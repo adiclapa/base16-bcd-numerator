@@ -75,43 +75,44 @@ void SevenSegment(void)
 
          case 9:
         	 PTC->PDOR = MASK(Segment_e);
+					 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d));
          break;
-		 //hex only
-		 case 10:
-			 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c)) | MASK(Segment_d);
-       PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
-         break;
+			 //hex only
+			 case 10:
+				 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c)) | MASK(Segment_d);
+				 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
+					 break;
 
-		 case 11:
-			 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d));
-        	 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
-         break;
+			 case 11:
+				 PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d));
+						 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
+					 break;
 
-		 case 12:
-			 PTB->PDOR =  MASK(Segment_b) | MASK(Segment_c) | ~(MASK(Segment_a) | MASK(Segment_d));
-					 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f)) | MASK(Segment_g);
-         break;
+			 case 12:
+				 PTB->PDOR =  MASK(Segment_b) | MASK(Segment_c) | ~(MASK(Segment_a) | MASK(Segment_d));
+						 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f)) | MASK(Segment_g);
+					 break;
 
-		 case 13:
-			  PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d));
-					 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f));
-         break;
+			 case 13:
+					PTB->PDOR = ~(MASK(Segment_a) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d));
+						 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f));
+					 break;
 
-		 case 14:
-			 PTB->PDOR = MASK(Segment_b) | MASK(Segment_c) | ~(MASK(Segment_a) | MASK(Segment_d));
-        	 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
-         break;
+			 case 14:
+				 PTB->PDOR = MASK(Segment_b) | MASK(Segment_c) | ~(MASK(Segment_a) | MASK(Segment_d));
+						 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
+					 break;
 
-		 case 15:
-			 PTB->PDOR = ~(MASK(Segment_a)) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d);
-        	 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
-         break;
+			 case 15:
+				 PTB->PDOR = ~(MASK(Segment_a)) | MASK(Segment_b) | MASK(Segment_c) | MASK(Segment_d);
+						 PTC->PDOR = ~(MASK(Segment_e) | MASK(Segment_f) | MASK(Segment_g));
+					 break;
     }
 }
 
 void RGBLed_Init(void){
 	
-	// Activarea semnalului de ceas pentru pinii folositi în cadrul led-ului RGB
+	// Activarea semnalului de ceas pentru pinii folositi Ã®n cadrul led-ului RGB
 	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTC_MASK;
 	
 	// Enable Clock to port A
@@ -183,39 +184,38 @@ void Switch_Init(void) {
 	PORTA->PCR[SWITCH_PIN] &= ~PORT_PCR_MUX_MASK;
 	PORTA->PCR[SWITCH_PIN] |= PORT_PCR_MUX(1);
 	
-	// Activare întreruperi pe rising edge
+	// Activare Ã®ntreruperi pe rising edge
 	PORTA->PCR[SWITCH_PIN] |= PORT_PCR_IRQC(0x09) | PORT_PCR_PE_MASK;
 	
 	if(reverse)
 		count = 15;
 	else 
 		count = 0;
-	// Activare întrerupere pentru a folosi switch-ul
+	// Activare Ã®ntrerupere pentru a folosi switch-ul
 	NVIC_ClearPendingIRQ(PORTA_IRQn);
-	NVIC_SetPriority(PORTA_IRQn, 128);
+	//NVIC_SetPriority(PORTA_IRQn, 128);
 	NVIC_EnableIRQ(PORTA_IRQn);
 }
 
 void PORTA_IRQHandler() {
 	SevenSegment();
-	delay(100);
+	
 	//Trimite count la host
 	UART0_Transmit(count);
+	delay(300);
+	
 	if(reverse){
 		count--;
-		if(count < 0)
+		if(count<0)
 			count = 15;
 	} else {
-		count++;
-		if(count == 16)
-			count = 0;
+		count = (count + 1) % 16;
 	}	
-
+	
 	PORTA_ISFR = (1<<SWITCH_PIN);
 }
 
 void UART0_IRQHandler(void) {
-		//Primeste date pe serial
 		uint8_t c = 0;
 		if(UART0->S1 & UART0_S1_RDRF_MASK) {
 			c = UART0->D;
@@ -223,9 +223,38 @@ void UART0_IRQHandler(void) {
 		//Daca c este a seteaza reverse pe 0
 		if(c == 'a'){
 			reverse = 0;
+			count+=2;
 		}
 		//Daca c este d seteaza reverse pe 1
 		if(c == 'd'){
 			reverse = 1;
+			count-=2;
 		}
+	
+		//Daca c este w incrementeaza valoarea lui count
+		if(c == 'w'){
+			//Daca trece de 0x0f atunci trebuie sa ajunga la 0	
+			SevenSegment();
+			UART0_Transmit(count);
+			delay(300);
+			count = (count + 1) % 16;
+			//Primeste date pe serial
+			
+		}
+		
+		//Daca c este s decrementeaza valoarea lui count
+		if(c == 's') {
+			//Primeste date pe serial
+			
+			delay(300);
+			if(count == 0)
+				count = 0x0f;
+			else
+				count -= 2;
+			SevenSegment();
+			UART0_Transmit(count);
+		}
+		//delay(300);
+		
+		PORTA_ISFR = (1<<SWITCH_PIN);
 }
