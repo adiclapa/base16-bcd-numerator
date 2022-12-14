@@ -112,7 +112,7 @@ void SevenSegment(void)
 
 void RGBLed_Init(void){
 	
-	// Activarea semnalului de ceas pentru pinii folositi Ã®n cadrul led-ului RGB
+	// Activarea semnalului de ceas pentru pinii folositi în cadrul led-ului RGB
 	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTC_MASK;
 	
 	// Enable Clock to port A
@@ -184,32 +184,41 @@ void Switch_Init(void) {
 	PORTA->PCR[SWITCH_PIN] &= ~PORT_PCR_MUX_MASK;
 	PORTA->PCR[SWITCH_PIN] |= PORT_PCR_MUX(1);
 	
-	// Activare Ã®ntreruperi pe rising edge
+	// Activare întreruperi pe rising edge
 	PORTA->PCR[SWITCH_PIN] |= PORT_PCR_IRQC(0x09) | PORT_PCR_PE_MASK;
 	
 	if(reverse)
 		count = 15;
 	else 
 		count = 0;
-	// Activare Ã®ntrerupere pentru a folosi switch-ul
+	// Activare întrerupere pentru a folosi switch-ul
 	NVIC_ClearPendingIRQ(PORTA_IRQn);
 	//NVIC_SetPriority(PORTA_IRQn, 128);
 	NVIC_EnableIRQ(PORTA_IRQn);
 }
 
-void PORTA_IRQHandler() {
-	SevenSegment();
+int init = 0;
+void addValue(int8_t cmd){
+	count = count + cmd;
 	
-	//Trimite count la host
+	if(count < 0)
+		count = 15;
+	if(count > 15)
+		count = 0;
+	if(init==0){
+			count=0;
+			init=1;
+	}
 	UART0_Transmit(count);
 	delay(300);
-	
+	SevenSegment();
+}
+
+void PORTA_IRQHandler() {
 	if(reverse){
-		count--;
-		if(count<0)
-			count = 15;
+		addValue(-1);
 	} else {
-		count = (count + 1) % 16;
+		addValue(1);
 	}	
 	
 	PORTA_ISFR = (1<<SWITCH_PIN);
@@ -223,36 +232,20 @@ void UART0_IRQHandler(void) {
 		//Daca c este a seteaza reverse pe 0
 		if(c == 'a'){
 			reverse = 0;
-			count+=2;
 		}
 		//Daca c este d seteaza reverse pe 1
 		if(c == 'd'){
 			reverse = 1;
-			count-=2;
 		}
 	
 		//Daca c este w incrementeaza valoarea lui count
 		if(c == 'w'){
-			//Daca trece de 0x0f atunci trebuie sa ajunga la 0	
-			SevenSegment();
-			UART0_Transmit(count);
-			delay(300);
-			count = (count + 1) % 16;
-			//Primeste date pe serial
-			
+			addValue(1);
 		}
 		
 		//Daca c este s decrementeaza valoarea lui count
 		if(c == 's') {
-			//Primeste date pe serial
-			
-			delay(300);
-			if(count == 0)
-				count = 0x0f;
-			else
-				count -= 2;
-			SevenSegment();
-			UART0_Transmit(count);
+			addValue(-1);
 		}
 		//delay(300);
 		
