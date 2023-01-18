@@ -12,13 +12,16 @@
 ###### Materiale:
 - Push Button Digital
 - BCD
+- platforma NXP FRDM-KL25Z
 
 ###### Cerinte:
 [x] Modificarea unei valori numerice (0-F) afisate pe BCD prin intermediul actionarii butonului push. :tada:
 
-[ ] Interfata grafica va reprezenta segmentele aprinse din cadrul BCD-ului in conformitate cu valoarea afisata.
+[x] Interfata grafica va reprezenta segmentele aprinse din cadrul BCD-ului in conformitate cu valoarea afisata.
 
-[ ] Posibilitatea de schimbare a directiei de numarare a valorii afisate de BCD din interfata grafica. Actionarea unui buton grafic va produce incrementarea sau decrementarea numararii.
+[x] Posibilitatea de schimbare a directiei de numarare a valorii afisate de BCD din interfata grafica. 
+
+[x] Actionarea unui buton grafic va produce incrementarea sau decrementarea numararii.
 
 
 
