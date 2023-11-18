@@ -1,4 +1,4 @@
-#            Proiect Microprocesoare                 #
+# Proiect Microprocesoare
 
 
 ###### Echipa CCS:
@@ -32,7 +32,7 @@
 - Segment E: conectat la PTC2
 - Segment F: conectat la PTC1
 - Segment G: conectat la PTC9
-- Conector ** + **: conectat la alimentare
+- Conector + : conectat la alimentare
 
 ### Push button:
 ![Button](https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/DFR0029.JPG)
